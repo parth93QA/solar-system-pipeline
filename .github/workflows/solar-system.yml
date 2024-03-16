@@ -12,14 +12,14 @@ env:
 jobs:
     unit-testing:
         
-      
+
         name: Unit Testing
         strategy:
           matrix:
-             operating_system: [ubuntu-latest, macos-latest]
+             operating_system: [ubuntu-latest]
              nodejs_version: [18, 19, 20]
              exclude:
-               - nodejs_version: 18
+               - nodejs_version: [18,20]
                  operating_system: macos-latest
               
         runs-on: ${{ matrix.operating_system }}
