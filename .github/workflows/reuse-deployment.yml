@@ -6,10 +6,32 @@ on:
             required: true
           mongodb-password:
             required: true 
+        inputs:
+          mongodb-uri:
+            required: true
+            type: string
+          kubectl-version:
+            description: Provide required Kubectl version
+            default:  v1.26.0
+            required: false
+            type: string
+          k9s-manifest-dir:
+            description: Directory containing Kubernetes manifests files
+            default: kubernetes/
+            required: true
+            type: string
+          environment:
+            default: development
+            description: Provide he Deployment Environment
+            required: true
+            type: string
+        outputs:
+          application-url:
+            value: ${{ jobs.reuse-deploy.outputs.APP_INGRESS_URL }}
 jobs:
     reuse-deploy:
         environment: 
-            name: development 
+            name: ${{ inputs.environment }} 
             url: ${{ steps.set-ingress-host-address.outputs.APP_INGRESS_HOST }}
         runs-on: ubuntu-latest
         outputs:
@@ -21,7 +43,7 @@ jobs:
             - name: Install kubectl CLI
               uses: azure/setup-kubectl@v3
               with:
-                version: 'v1.26.0'
+                version: '${{ inputs.kubectl-version }}'
         
             - name: Set KubeConfig
               uses: azure/k8s-set-context@v3
@@ -46,7 +68,7 @@ jobs:
               with:
                 tokenPrefix: '${'
                 tokenSuffix: '}'
-                files: '[kubernetes/development/*.yaml]'
+                files: '[${{ inputs.k9s-manifest-dir }}*.yaml]'
               env:
                 NAMESPACE: ${{ vars.NAMESPACE }}
                 REPLICAS: ${{ vars.REPLICAS }}
@@ -56,12 +78,12 @@ jobs:
             - name: Check Files
               run: |
 
-                cat kubernetes/deploments/*.yaml
+                cat ${{ inputs.k9s-manifest-dir }}*.yaml
 
             - name: Create MongoDB Secret
               run: |
                 kubectl -n ${{ vars.NAMESPACE }} create secret generic mongo-db-creds \
-                --from-literal=MONGO_URI=${{ env.MONGO_URI }} \
+                --from-literal=MONGO_URI=${{ inputs.mongodb-uri }} \
                 --from-literal=MONGO_USERNAME=${{ vars.MONGO_USERNAME }}\
                 --from-literal=MONGO_PASSWORD=${{ secrets.mongodb-password }} \
                 --save-config \
