@@ -220,8 +220,12 @@ jobs:
       uses: ./.github/workflows/reuse-deployment.yml
       secrets: 
         k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
-        mongodb-password: ${{ secrets.MONGO_PASSWORD }}          
-        
+        mongodb-password: ${{ secrets.MONGO_PASSWORD }}   
+      with:
+          mongodb-uri: ${{ vars.MONGO_URI }}
+          environment: development
+          k9s-manifest-dir: kubernetes/development/       
+      
     prod-integration-testing:
                name: PROD Integration Testing
                needs: prod-deploy
