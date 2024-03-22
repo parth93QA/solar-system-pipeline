@@ -41,7 +41,7 @@ jobs:
                 node-version: ${{ matrix.nodejs_version }}
             
             - name: Composite Action - Cache Install NPM packages
-              uses: ./.github/workflows/custom-actions/npm-actions
+              uses: .github/workflows/custom-actions/npm-actions
               with:
                 path-of-folder: node_modules 
             
@@ -90,7 +90,7 @@ jobs:
           #   run: npm install
 
           - name: Composite Action - Cache Install NPM packages
-            uses: ./.github/workflows/custom-actions/npm-actions
+            uses: .github/workflows/custom-actions/npm-actions
             with:
               path-of-folder: node_modules 
 
